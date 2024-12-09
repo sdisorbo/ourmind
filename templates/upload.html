@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../static/ourmind_trans.ico"/>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <title>OurMind-Upload</title>
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Exo 2', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #00022e; /* Dark background */
+            color: #f4f4f9; /* Light text color */
+            overflow: hidden; /* Hide elements that go off-screen */
+        }
+
+        /* Header Styling */
+        header {
+            background-color: #04004f;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-image {
+            margin-right: 10px;
+            height: 40px; /* Adjust the height as needed */
+        }
+
+        header .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4a90e2;
+            text-decoration: none;
+        }
+
+        header nav {
+            display: flex;
+            gap: 15px;
+        }
+
+        header nav a {
+            text-decoration: none;
+            color: #f4f4f9;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        header nav a:hover {
+            background-color: black;
+            color: #fff;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Full page height */
+        }
+
+        /* Upload Box Styling */
+        .upload-box {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px;
+            text-align: center;
+            width: 400px;
+            z-index: 2; /* Ensure it's above the bouncing image */
+        }
+
+        .upload-box h2 {
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        input[type="file"] {
+            margin: 20px 0;
+            font-size: 1rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            width: 100%;
+        }
+
+        input[type="file"]::file-selector-button {
+            background-color: #f420e9;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background-color: #6c7680;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #f420e9;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #6c7680;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        /* Bouncing Image */
+        .bouncing-image {
+            position: absolute;
+            width: 100px; /* Square size */
+            height: 100px;
+            object-fit: cover;
+            border-radius: 16px;
+            z-index: 1;
+        }
+        /* Loading Animation */
+        .loading-animation {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            justify-content: center center; /* Center all ovals */
+        }
+
+        /* Shared Oval Container */
+        .oval-container {
+            position: relative; /* Ensures ovals are stacked */
+            width: 200px; /* Same size as the container */
+            height: 200px; /* Same size as the container */
+        }
+
+        /* Ovals */
+        .oval {
+            position: absolute; /* Stack each oval on top of each other */
+            top: 50%; /* Center vertically */
+            left: 50%; /* Center horizontally */
+            transform: translate(-50%, -50%) rotate(0deg); /* Ensure alignment and rotation */
+            transform-origin: center center; /* Consistent rotation origin */
+            border: 3px solid rgba(74, 144, 226, 0.8); /* Blue outline */
+            width: 100px;
+            height: 10px;
+            border-radius: 50%;
+            animation: spin0 1.5s linear infinite;
+        }
+
+                /* Create varying sizes and rotation delays */
+        .oval:nth-child(2) {
+            width: 80px;
+            height: 5px;
+            border: 3px solid rgba(244, 32, 233, 0.8); /* Pink outline */
+            animation: spin 1.5s linear infinite 0.2s;
+        }
+
+        .oval:nth-child(3) {
+            width: 90px;
+            height: 7px;
+            border: 3px solid rgba(157, 65, 255, 0.8); /* Yellow outline */
+            animation: spin0 1.5s linear infinite 0.4s;
+        }
+
+        .oval:nth-child(4) {
+            width: 90px;
+            height: 3px;
+            border: 3px solid rgba(65, 255, 125, 0.8); /* Green outline */
+            animation: spin 1.5s linear infinite 0.6s;
+        }
+        .oval:nth-child(5) {
+            width: 100px;
+            height: 100px;
+            border: solid rgba(194, 194, 194, 0.95); /* Green outline */
+            background-color: rgba(194, 194, 194, 0.95);
+            animation: spin 1.5s linear infinite 0.6s;
+            z-index: -1;
+        }
+
+
+        @keyframes spin {
+            from {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+        @keyframes spin0 {
+            from {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+            to {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <a href="#" class="logo">
+            OurMind
+            <img src="../static/ourmind_trans.png" alt="Logo" class="logo-image"> <!-- Add your logo image here -->
+        </a>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/profile">Profile</a>
+            <a href="/view">View Memories</a>
+        </nav>
+    </header>
+    <!-- Loading Animation -->
+    <div class="loading-animation">
+        <div class="oval-container">
+            <div class="oval"></div>
+            <div class="oval"></div>
+            <div class="oval"></div>
+            <div class="oval"></div>
+            <div class="oval"></div>
+        </div>
+    </div>
+    <!-- Random Bouncing Image -->
+    <img src="../static/funny.jpg" alt="Bouncing Image" class="bouncing-image" id="bouncingImage">
+
+    <!-- Upload Box -->
+    <div class="container">
+        <div class="upload-box">
+            <h2>Upload Images</h2>
+            <form action="/upload" method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
+                <input type="file" name="files" multiple required>
+                <button type="submit">Upload</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const colors = [
+            'rgba(241, 12, 207, 0.974)', // Pink
+            'rgba(45, 118, 245, 0.974)', // Blue
+            'rgba(252, 255, 65, 0.974)', // Yellow
+            'rgba(65, 255, 125, 0.974)'  // Green
+        ];
+        // Randomly select a color
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+        // Apply the selected color to the box shadow
+        document.querySelector('header').style.boxShadow = `0 4px 30px ${randomColor}`;
+        document.querySelector('.upload-box').style.boxShadow = `0 4px 30px ${randomColor}`;
+        document.querySelector('.logo').style.color = randomColor;
+
+        // Bouncing Image Logic
+        const img = document.getElementById('bouncingImage');
+        let posX = Math.random() * window.innerWidth;
+        let posY = Math.random() * window.innerHeight;
+        let speedX = (Math.random() * 2 + 1) * (Math.random() < 0.5 ? 1 : -1); // Random speed and direction
+        let speedY = (Math.random() * 2 + 1) * (Math.random() < 0.5 ? 1 : -1);
+
+        function bounce() {
+            posX += speedX;
+            posY += speedY;
+
+            // Reverse direction if it hits a wall
+            if (posX <= 0 || posX + img.offsetWidth >= window.innerWidth) {
+                speedX *= -1;
+            }
+            if (posY <= 0 || posY + img.offsetHeight >= window.innerHeight) {
+                speedY *= -1;
+            }
+
+            img.style.left = `${posX}px`;
+            img.style.top = `${posY}px`;
+
+            requestAnimationFrame(bounce); // Continuously update position
+        }
+
+        img.style.position = 'absolute';
+        bounce(); // Start the animation
+
+        // Show loading animation on form submission
+        function showLoading() {
+            document.querySelector('.loading-animation').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>

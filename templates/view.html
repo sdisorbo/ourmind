@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel = "icon", href = "../static/ourmind_trans.ico"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Poiret+One&display=swap" rel="stylesheet">
+    <title>OurMind-View</title>
+    <style>
+        body {
+            font-family: 'Exo 2', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #00022e; /* Dark background */
+            color: #f4f4f9; /* Light text color */
+        }
+
+        header {
+            background-color: #04004f;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-image {
+            margin-right: 10px;
+            height: 40px; /* Adjust the height as needed */
+        }
+
+        header .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4a90e2;
+            text-decoration: none;
+        }
+
+        header nav {
+            display: flex;
+            gap: 15px;
+        }
+
+        header nav a {
+            text-decoration: none;
+            color: #f4f4f9;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        header nav a:hover {
+            background-color: black;
+            color: #fff;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .search-container {
+            display: flex;
+            gap: 15px;
+            margin: 20px auto;
+            max-width: 700px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Search Bar Container */
+        .search-bar-container {
+            flex: 1;
+            padding: 6px;
+            border-radius: 30px; /* Rounded container for input */
+            background-color: rgba(0, 0, 0, 0.8); /* Dark background */
+            box-shadow: 0 4px 8px; /* Blue shadow */
+        }
+
+        .search-bar-container:hover {
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.974); /* Green shadow on hover */
+        }
+
+        .search-bar-container input {
+            width: 97%;
+            padding: 6px 8px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px; /* Slightly rounded input inside the container */
+            background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent input */
+            color: white;
+            outline: none;
+        }
+
+        .search-bar-container input::placeholder {
+            font-family: 'Exo 2', sans-serif;
+            width: 75%;
+            font-style: italic; /* Italicized placeholder text */
+        }
+
+        /* Search Button Container */
+        .search-button-container {
+            border-radius: 30px; /* Rounded container for button */
+            background-color: rgba(0, 0, 0, 0.8); /* Blue background */
+            box-shadow: 0 4px 15px; /* Blue shadow */
+        }
+
+        .search-button-container:hover {
+            box-shadow: 0 4px 15px rgba(65, 255, 125, 0.974); /* Green shadow on hover */
+            transform: scale(1.05); /* Slight zoom */
+        }
+
+        .search-button-container button {
+            width: 100%; /* Ensure the button fills its container */
+            padding: 12px 20px;
+            font-size: 16px;
+            font-family: 'Exo 2', sans-serif;
+            font-weight: bold;
+            color: white;
+            background-color: transparent; /* Inherit from parent container */
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .search-button-container button:active {
+            transform: scale(0.95); /* Slight shrink on click */
+        }
+
+        .results {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px auto;
+            max-width: 90%;
+        }
+
+        .results img {
+            width: 400px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 3px 6px rgba(255, 255, 254, 0.971);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s forwards ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #121212;
+            padding: 40px; /* Increase padding for a larger feel */
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Slightly deeper shadow for emphasis */
+            z-index: 1000;
+            width: 80%; /* Increase width to 80% of the viewport */
+            max-width: 800px; /* Limit the maximum width */
+            height: 70%; /* Increase height to 70% of the viewport */
+            max-height: 600px; /* Limit the maximum height */
+            overflow: auto; /* Enable scrolling if content overflows */
+        }
+
+        .modal-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 30px; /* Add more spacing between the image and description box */
+        }
+
+        #full-size-image {
+            max-width: 50%; /* Image takes half the modal width */
+            max-height: 100%; /* Image scales to fit modal height */
+            object-fit: contain;
+        }
+
+
+        .modal.active {
+            display: block;
+        }
+
+        .modal textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #121212;
+            color: #f4f4f9;
+            border: 1px solid #f420e9;
+            border-radius: 4px;
+        }
+
+        .modal .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+
+        .modal button.cancel {
+            background-color: #ccc;
+            color: black;
+        }
+
+        .modal button.cancel:hover {
+            background-color: #bbb;
+        }
+
+        .modal button:hover {
+            background-color: #4f5962;
+        }
+        .modal-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        }
+
+        #full-size-image {
+            max-width: 300px;
+            max-height: 300px;
+            object-fit: contain;
+            margin-right: 20px;
+            float: left;
+        }
+
+        .modal textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+
+        .modal .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal button {
+            padding: 10px 20px;
+            background-color: #f420e9;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .modal button.cancel {
+            background-color: #ccc;
+            color: black;
+        }
+
+        .modal button.cancel:hover {
+            background-color: #bbb;
+        }
+
+        .delete-button {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            padding: 8px 12px;
+            background-color: #ff4d4d; /* Red background for delete */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .delete-button:hover {
+            background-color: #d32f2f; /* Darker red on hover */
+            transform: scale(1.05); /* Slightly enlarge on hover */
+        }
+
+        .delete-button:active {
+            transform: scale(0.95); /* Slightly shrink on click */
+        }
+
+        .favorite-button {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            padding: 10px;
+            background-color: transparent;
+            color: #f32121; /* Red heart color */
+            font-size: 24px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .favorite-button:hover {
+            transform: scale(1.1); /* Slightly enlarge on hover */
+        }
+
+        .favorite-button.active {
+            color: #ee2121; /* Lighter red for active/favorited state */
+        }
+
+        .favorite-button.modal{
+            color: #eb2c2c;
+        }
+        
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <a href="#" class="logo">
+            OurMind
+            <img src="../static/ourmind_trans.png" alt="Logo" class="logo-image"> <!-- Add your logo image here -->
+        </a>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/profile">Profile</a>
+            <a href="/upload">Add Images</a>
+        </nav>
+    </header>
+    <br></br>
+    <h1>SEARCH MEMORIES</h1>
+    <div class="search-container">
+        <div class="search-bar-container">
+            <input type="text" id="description" placeholder="Describe the image you want to find...">
+        </div>
+        <div class="search-button-container">
+            <button onclick="searchImages()">Search</button>
+        </div>
+    </div>
+    <div class="results" id="results"></div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <!-- Full-size image -->
+            <img id="full-size-image" src="" alt="Selected Image">
+            
+            <!-- Description editing section -->
+            <div>
+                <h2>Edit Memory</h2>
+                <p id="current-description"></p>
+                <textarea id="new-description" placeholder="Enter a new description..."></textarea>
+                <div class="actions">
+                    <button class="cancel" onclick="closeModal()">Cancel</button>
+                    <button onclick="saveDescription()">Save</button>
+                </div>
+            <button class="favorite-button" onclick="toggleFavorite()">&#9829;</button> <!-- Unicode for heart -->
+
+            <button class="delete-button" onclick="deleteImage()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedImageId = null;
+
+        function searchImages() {
+            const description = document.getElementById('description').value;
+            fetch('/view', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ description })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const results = document.getElementById('results');
+                results.innerHTML = '';  // Clear previous results
+                data.forEach(image => {
+                    const img = document.createElement('img');
+                    img.src = `data:image/jpeg;base64,${image.data}`;
+                    img.alt = image.name;
+                    img.onclick = () => openModal(image.id, image.description);
+                    results.appendChild(img);
+                });
+            })
+            .catch(error => console.error('Error fetching images:', error));
+        }
+
+        function searchImages() {
+            const description = document.getElementById('description').value;
+            fetch('/view', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ description })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const results = document.getElementById('results');
+                results.innerHTML = ''; // Clear previous results
+                data.forEach(image => {
+                    const img = document.createElement('img');
+                    img.src = `data:image/jpeg;base64,${image.data}`; // Base64 data for the image
+                    img.alt = image.name;
+                    img.onclick = () => openModal(image.id, image.description, img.src); // Pass src to modal
+                    results.appendChild(img);
+                });
+            })
+            .catch(error => console.error('Error fetching images:', error));
+        }
+
+
+        function openModal(imageId, description, imageUrl) {
+            selectedImageId = imageId; // Set the selected image ID
+            const modal = document.getElementById('modal');
+
+            // Update the full-size image
+            const fullSizeImage = document.getElementById('full-size-image');
+            fullSizeImage.src = imageUrl; // Set the clicked image's source
+
+            // Update the description
+            document.getElementById('current-description').textContent = `Current Memory: ${description}`;
+            document.getElementById('new-description').value = ''; // Clear the textarea
+
+            // Show the modal
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.classList.remove('active');
+            selectedImageId = null; // Reset the selected image ID
+        }
+
+        function saveDescription() {
+            const newDescription = document.getElementById('new-description').value;
+            if (!newDescription.trim()) {
+                alert("Description cannot be empty.");
+                return;
+            }
+
+            fetch('/edit_description', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image_id: selectedImageId, description: newDescription })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                closeModal();  // Close the modal
+            })
+            .catch(error => console.error('Error saving description:', error));
+        }
+
+        // Add event listener to trigger search on Enter key press
+        document.getElementById('description').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                searchImages();
+            }
+        });
+
+        function toggleFavorite() {
+            const favoriteButton = document.querySelector('.favorite-button');
+
+            // Send a POST request to toggle favorite status
+            fetch('/toggle_favorite', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image_id: selectedImageId, user: sessionStorage.getItem('user') }) // Assume user info stored in session
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    favoriteButton.classList.toggle('active'); // Toggle heart color
+                } else {
+                    alert("Failed to toggle favorite. Please try again.");
+                }
+            })
+            .catch(error => console.error('Error toggling favorite:', error));
+        }
+
+        function deleteImage() {
+            if (!confirm("Are you sure you want to delete this image?")) {
+                return; // Exit if the user cancels the action
+            }
+
+            // Make a POST request to delete the image
+            fetch('/delete_image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image_id: selectedImageId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Image deleted successfully.");
+                    closeModal(); // Close the modal after deletion
+                    location.reload(); // Reload the page to refresh the image list
+                } else {
+                    alert("Failed to delete the image. Please try again.");
+                }
+            })
+            .catch(error => console.error('Error deleting image:', error));
+        }
+
+
+         // Define the colors
+        const colors = [
+            'rgba(241, 12, 207, 0.974)', // Green
+            'rgba(45, 118, 245, 0.974)',
+            'rgba(252, 255, 65, 0.974)',
+            'rgba(65, 255, 125, 0.974)'  // Blue
+        ];
+
+        // Randomly select a color
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+        // Apply the selected color to the box shadow
+        document.querySelector('.search-bar-container').style.boxShadow = `0 4px 8px ${randomColor}`;
+        document.querySelector('.search-button-container').style.boxShadow = `0 4px 15px ${randomColor}`;
+        document.querySelector('header').style.boxShadow = `0 4px 30px ${randomColor}`;
+        document.querySelector('.logo').style.color = randomColor;
+        document.querySelector('.chat-bar').style.color = randomColor;
+        
+            
+    </script>
+</body>
+</html>

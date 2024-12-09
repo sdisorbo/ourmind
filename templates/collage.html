@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel = "icon", href = "../static/ourmind_trans.ico"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Poiret+One&display=swap" rel="stylesheet">
+    <title>OurMind</title>
+    <style>
+        /* General Styling */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Exo 2', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: linear-gradient(to bottom right, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.6)), url('static/bg.jpg');
+            color: white;
+        }
+
+        /* Overlay Container */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(241, 219, 161, 0.27); /* Light black transparent film */
+            pointer-events: none; /* Ensure it doesn't block interactions */
+            z-index: 5; /* Adjust to sit above content but below other overlays */
+        }
+
+        
+
+        /* See-Through Gray Box with Welcome Message */
+        .nav-box {
+            background-color: rgba(0, 0, 0, 0.87);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 30px;
+            position: fixed;
+            top: 20px;
+            width: 70%;
+            /*center in center of page vertically*/
+            left: 50%;
+            transform: translate(-50%, 100%);
+            max-width: 600px;
+            z-index: 10;
+        }
+
+        .nav-box h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .nav-box h1 img {
+            margin-right: 10px;
+            height: 45px; /* Adjust the height as needed */
+        }
+
+        .nav-box .menu {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .nav-box a {
+            text-decoration: none;
+            color: white;
+            padding: 10px 20px;
+            border: 1px solid white;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .nav-box a:hover {
+            background-color: white;
+            color: black;
+        }
+
+        /* Collage Grid */
+        .collage {
+            display: grid;
+            gap: 2px;
+            width: 100vw; /* Full viewport width */
+            height: 100vh; /* Full viewport height */
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            grid-auto-rows: 400px; /* Squares */
+            overflow: hidden;
+        }
+
+        .collage img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures images fill their squares */
+        }
+        .highlighted-text {
+            font-size: 24px;
+            font-weight: bold;
+            /* Initial color, will be overridden by JavaScript */
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+    <!-- Navigation and Welcome Box -->
+    <div class="nav-box">
+        <h1>
+            WELCOME TO <span class="highlighted-text">OurMind</span>
+            <img src="../static/ourmind_trans.png" alt="OurMind Logo">
+        </h1>
+        <div class="menu">
+            {% if session.get('user') %}
+                <a href="/profile">Profile</a>
+                <a href="/upload">Add Images</a>
+                <a href="/view">View Images</a>
+                <a href="/logout">Logout</a>
+            {% else %}
+                <a href="/login">Login</a>
+                <a href="/view">View Images</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Collage Grid -->
+    <div class="collage">
+        {% for picture in selected_pictures %}
+            <img src="data:image/jpeg;base64,{{ picture }}" alt="Collage Image">
+        {% endfor %}
+    </div>
+    <script>
+         // Define the colors
+         const colors = [
+            'rgba(241, 12, 207, 0.974)', // Green
+            'rgba(45, 118, 245, 0.974)',
+            'rgba(252, 255, 65, 0.974)',
+            'rgba(65, 255, 125, 0.974)'  // Blue
+        ];
+
+        // Randomly select a color
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+        // Apply the selected color to the box shadow
+        document.querySelector('.nav-box').style.boxShadow = `0 4px 30px ${randomColor}`;
+        document.querySelector('.highlighted-text').style.color = randomColor;
+
+    </script>
+</body>
+</html>

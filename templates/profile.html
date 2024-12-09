@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../static/ourmind_trans.ico"/>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <title>Profile - Favorites</title>
+    <style>
+        body {
+            font-family: 'Exo 2', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #00022e;
+            color: #f4f4f9;
+        }
+        .logo-image {
+            margin-right: 10px;
+            height: 40px; /* Adjust the height as needed */
+        }
+
+
+        header {
+            background-color: #04004f;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 30px;
+        }
+
+        header .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4a90e2;
+            text-decoration: none;
+        }
+
+        header nav {
+            display: flex;
+            gap: 15px;
+        }
+
+        header nav a {
+            text-decoration: none;
+            color: #f4f4f9;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        header nav a:hover {
+            background-color: black;
+            color: white;
+        }
+
+        .favorites-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 90%;
+        }
+
+        .favorite-block {
+            position: relative;
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .favorite-block img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .favorite-block p {
+            margin: 0;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .remove-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgb(68, 0, 0);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .remove-button:hover {
+            background-color: darkred;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <a href="#" class="logo">
+            OurMind
+            <img src="../static/ourmind_trans.png" alt="Logo" class="logo-image"> <!-- Add your logo image here -->
+        </a>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/upload">Upload Images</a>
+            <a href="/view">View Memories</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </header>
+
+    <h1 style="text-align: center; margin-top: 20px;">Hi {{ username }}. Welcome to Your Profile :)</h1>
+        <div class="favorites-container">
+        {% for favorite in favorites %}
+        <div class="favorite-block" id="favorite-{{ favorite.id }}">
+            <img src="data:image/jpeg;base64,{{ favorite.data }}" alt="{{ favorite.file_name }}">
+            <p>{{ favorite.description }}</p>
+            <button class="remove-button" onclick="removeFavorite('{{ favorite.id }}')">x</button>
+        </div>
+        
+        {% endfor %}
+    </div>
+    <script>
+       function removeFavorite(favoriteId) {
+            if (confirm("Are you sure you want to remove this image from your favorites?")) {
+                fetch(`/remove_favorite/${favoriteId}`, {
+                    method: 'POST', // Using POST instead of DELETE
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        const favoriteElement = document.getElementById(`favorite-${favoriteId}`);
+                        if (favoriteElement) {
+                            favoriteElement.remove();
+                        }
+                    } else {
+                        response.json().then(data => {
+                            alert(data.error || "Failed to remove the image. Please try again.");
+                        });
+                    }
+                })
+                .catch(error => console.error('Error removing favorite:', error));
+            }
+        }
+
+        const colors = [
+            'rgba(241, 12, 207, 0.974)', // Green
+            'rgba(45, 118, 245, 0.974)',
+            'rgba(252, 255, 65, 0.974)',
+            'rgba(65, 255, 125, 0.974)'  // Blue
+        ];
+
+        // Randomly select a color
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+        // Apply the selected color to the box shadow
+        document.querySelector('header').style.boxShadow = `0 4px 30px ${randomColor}`;
+        document.querySelector('.logo').style.color = randomColor;
+
+
+    </script>
+</body>
+</html>
