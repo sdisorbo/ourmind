@@ -83,6 +83,23 @@ users = {
     "sdisorbo": "0910"
 }
 
+# Create users table if it doesn't exist
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL
+);
+""")
+conn.commit()
+
+# Insert predefined users if not already in DB
+for username, password in users.items():
+    cursor.execute("SELECT 1 FROM users WHERE username = %s", (username,))
+    if not cursor.fetchone():
+        cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, password))
+conn.commit()
+
 
 def generate_image_description(base64_image):
     """Uses GPT-4 Vision to generate a description for an image."""
