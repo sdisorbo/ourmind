@@ -8,6 +8,7 @@ import random
 import nltk
 from nltk.corpus import stopwords
 import re
+import urllib.parse as up
 
 client = OpenAI(
   api_key="temp")
@@ -18,13 +19,18 @@ app.secret_key = "t"  # Use a strong, unique key
 
 
 
-conn = psycopg2.connect(
-    dbname="t",  # Use your existing database name
-    user="t",  # Replace with your PostgreSQL username
-    password="t",  # Replace with your PostgreSQL password
-    host="localhost",  # Default host for local PostgreSQL
-    port=5432  # Default port
-)
+#conn = psycopg2.connect(
+#    dbname="t",  # Use your existing database name
+#    user="t",  # Replace with your PostgreSQL username
+#    password="t",  # Replace with your PostgreSQL password
+#    host="localhost",  # Default host for local PostgreSQL
+#    port=5432  # Default port
+#)
+
+
+
+DATABASE_URL = os.getenv("DATABASE_URL")  # set this in Render dashboard
+conn = psycopg2.connect(DATABASE_URL)
 
 cursor = conn.cursor()
 
