@@ -9,6 +9,9 @@ import nltk
 from nltk.corpus import stopwords
 import re
 import urllib.parse as up
+from dotenv import load_dotenv
+
+load_dotenv()
 
 client = OpenAI(
   api_key="temp")
