@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 client = OpenAI(
-  api_key="temp")
+  api_key="OPENAI_KEY")
 
 # Flask setup
 app = Flask(__name__)
